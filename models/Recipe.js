@@ -1,8 +1,3 @@
-/**
- * Recipe Model
- * Defines the schema for recipes with full validation
- */
-
 const mongoose = require('mongoose');
 
 // Sub-schema for ingredients

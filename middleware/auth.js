@@ -1,8 +1,3 @@
-/**
- * Authentication Middleware
- * Handles user authentication and authorization
- */
-
 // Check if user is authenticated
 const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.userId) {

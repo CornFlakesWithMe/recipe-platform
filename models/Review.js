@@ -1,8 +1,3 @@
-/**
- * Review Model
- * Defines the schema for recipe reviews and ratings
- */
-
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({

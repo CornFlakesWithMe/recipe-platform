@@ -1,8 +1,3 @@
-/**
- * Recipe Routes
- * Full CRUD operations for recipes
- */
-
 const parseFormData = require('../middleware/parseFormData');
 const express = require('express');
 const router = express.Router();
@@ -47,10 +42,9 @@ const upload = multer({
     }
 });
 
-/**
- * GET /api/recipes
- * Get all recipes with pagination and filtering
- */
+
+//GET /api/recipes
+//Get all recipes with pagination and filtering
 router.get('/', validateSearch, async (req, res) => {
     try {
         const {
@@ -149,10 +143,9 @@ router.get('/', validateSearch, async (req, res) => {
     }
 });
 
-/**
- * GET /api/recipes/featured
- * Get featured/popular recipes
- */
+
+//GET /api/recipes/featured
+//Get featured/popular recipes
 router.get('/featured', async (req, res) => {
     try {
         const recipes = await Recipe.find({ isPublished: true })
@@ -175,10 +168,9 @@ router.get('/featured', async (req, res) => {
     }
 });
 
-/**
- * GET /api/recipes/recent
- * Get recently added recipes
- */
+
+//GET /api/recipes/recent
+//Get recently added recipes
 router.get('/recent', async (req, res) => {
     try {
         const recipes = await Recipe.find({ isPublished: true })
@@ -201,10 +193,9 @@ router.get('/recent', async (req, res) => {
     }
 });
 
-/**
- * GET /api/recipes/categories
- * Get recipe count by category
- */
+
+//GET /api/recipes/categories
+//Get recipe count by category
 router.get('/categories', async (req, res) => {
     try {
         const categories = await Recipe.aggregate([
@@ -227,10 +218,9 @@ router.get('/categories', async (req, res) => {
     }
 });
 
-/**
- * GET /api/recipes/user/:userId
- * Get recipes by a specific user
- */
+
+//GET /api/recipes/user/:userId
+//Get recipes by a specific user
 router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -270,10 +260,9 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
-/**
- * GET /api/recipes/my-recipes
- * Get current user's recipes (including unpublished)
- */
+
+//GET /api/recipes/my-recipes
+//Get current user's recipes (including unpublished)
 router.get('/my-recipes', isAuthenticated, async (req, res) => {
     try {
         const recipes = await Recipe.find({ author: req.session.userId })
@@ -294,10 +283,9 @@ router.get('/my-recipes', isAuthenticated, async (req, res) => {
     }
 });
 
-/**
- * GET /api/recipes/:id
- * Get a single recipe by ID
- */
+
+//GET /api/recipes/:id
+//Get a single recipe by ID
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id)
@@ -337,10 +325,9 @@ router.get('/:id', validateObjectId, async (req, res) => {
     }
 });
 
-/**
- * POST /api/recipes
- * Create a new recipe
- */
+
+//POST /api/recipes
+//Create a new recipe
 router.post('/', isAuthenticated, upload.single('image'), parseFormData, validateRecipe, async (req, res) => {
     try {
         // Parse JSON strings from FormData
@@ -448,10 +435,9 @@ router.post('/', isAuthenticated, upload.single('image'), parseFormData, validat
     }
 });
 
-/**
- * PUT /api/recipes/:id
- * Update a recipe
- */
+
+//PUT /api/recipes/:id
+//Update a recipe
 router.put('/:id', isAuthenticated, validateObjectId, upload.single('image'), async (req, res) => {
     try {
         // Find the recipe and check ownership
@@ -539,10 +525,9 @@ router.put('/:id', isAuthenticated, validateObjectId, upload.single('image'), as
     }
 });
 
-/**
- * DELETE /api/recipes/:id
- * Delete a recipe
- */
+
+//DELETE /api/recipes/:id
+//Delete a recipe
 router.delete('/:id', isAuthenticated, validateObjectId, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id);
@@ -591,10 +576,9 @@ router.delete('/:id', isAuthenticated, validateObjectId, async (req, res) => {
     }
 });
 
-/**
- * POST /api/recipes/:id/favorite
- * Toggle favorite status for a recipe
- */
+
+//POST /api/recipes/:id/favorite
+//Toggle favorite status for a recipe
 router.post('/:id/favorite', isAuthenticated, validateObjectId, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id);
@@ -636,10 +620,9 @@ router.post('/:id/favorite', isAuthenticated, validateObjectId, async (req, res)
     }
 });
 
-/**
- * GET /api/recipes/:id/favorite-status
- * Check if recipe is favorited by current user
- */
+
+//GET /api/recipes/:id/favorite-status
+//Check if recipe is favorited by current user
 router.get('/:id/favorite-status', isAuthenticated, validateObjectId, async (req, res) => {
     try {
         const user = await User.findById(req.session.userId);

@@ -1,18 +1,12 @@
-/**
- * Authentication Routes
- * Handles user registration, login, logout, and profile
- */
-
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const { isAuthenticated, isNotAuthenticated } = require('../middleware/auth');
 const { validateRegistration, validateLogin } = require('../middleware/validation');
 
-/**
- * POST /api/auth/register
- * Register a new user
- */
+
+ //POST /api/auth/register
+ //Register a new user
 router.post('/register', validateRegistration, async (req, res) => {
     try {
         const { username, email, password, firstName, lastName } = req.body;
@@ -70,10 +64,9 @@ router.post('/register', validateRegistration, async (req, res) => {
     }
 });
 
-/**
- * POST /api/auth/login
- * Log in a user
- */
+
+ //POST /api/auth/login
+ //Log in a user
 router.post('/login', validateLogin, async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -122,10 +115,9 @@ router.post('/login', validateLogin, async (req, res) => {
     }
 });
 
-/**
- * POST /api/auth/logout
- * Log out a user
- */
+
+//POST /api/auth/logout
+//Log out a user
 router.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -144,10 +136,9 @@ router.post('/logout', (req, res) => {
     });
 });
 
-/**
- * GET /api/auth/me
- * Get current user profile
- */
+
+//GET /api/auth/me
+//Get current user profile
 router.get('/me', isAuthenticated, async (req, res) => {
     try {
         const user = await User.findById(req.session.userId)
@@ -176,10 +167,9 @@ router.get('/me', isAuthenticated, async (req, res) => {
     }
 });
 
-/**
- * PUT /api/auth/profile
- * Update user profile
- */
+
+//PUT /api/auth/profile
+//Update user profile
 router.put('/profile', isAuthenticated, async (req, res) => {
     try {
         const { firstName, lastName, bio } = req.body;
@@ -226,10 +216,9 @@ router.put('/profile', isAuthenticated, async (req, res) => {
     }
 });
 
-/**
- * PUT /api/auth/password
- * Change user password
- */
+
+//PUT /api/auth/password
+//Change user password
 router.put('/password', isAuthenticated, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -285,10 +274,9 @@ router.put('/password', isAuthenticated, async (req, res) => {
     }
 });
 
-/**
- * GET /api/auth/check
- * Check if user is logged in
- */
+
+//GET /api/auth/check
+//Check if user is logged in
 router.get('/check', (req, res) => {
     if (req.session && req.session.userId) {
         res.json({

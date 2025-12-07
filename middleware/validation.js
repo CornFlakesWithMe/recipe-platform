@@ -1,8 +1,3 @@
-/**
- * Validation Middleware
- * Input validation and sanitization using express-validator
- */
-
 const { body, param, query, validationResult } = require('express-validator');
 
 // Handle validation errors

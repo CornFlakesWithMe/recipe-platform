@@ -1,8 +1,3 @@
-/**
- * User Model
- * Defines the schema for user accounts with validation
- */
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 

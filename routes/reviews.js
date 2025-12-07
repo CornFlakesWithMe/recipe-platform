@@ -1,8 +1,3 @@
-/**
- * Review Routes
- * Handles recipe reviews and ratings
- */
-
 const express = require('express');
 const router = express.Router();
 const Review = require('../models/Review');
@@ -10,10 +5,9 @@ const Recipe = require('../models/Recipe');
 const { isAuthenticated } = require('../middleware/auth');
 const { validateReview, validateObjectId } = require('../middleware/validation');
 
-/**
- * GET /api/reviews/recipe/:recipeId
- * Get all reviews for a recipe
- */
+
+ //GET /api/reviews/recipe/:recipeId
+ //Get all reviews for a recipe
 router.get('/recipe/:recipeId', async (req, res) => {
     try {
         const { recipeId } = req.params;
@@ -74,10 +68,9 @@ router.get('/recipe/:recipeId', async (req, res) => {
     }
 });
 
-/**
- * GET /api/reviews/user/:userId
- * Get all reviews by a user
- */
+
+//GET /api/reviews/user/:userId
+//Get all reviews by a user
 router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -111,10 +104,9 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
-/**
- * GET /api/reviews/:id
- * Get a single review
- */
+
+//GET /api/reviews/:id
+//Get a single review
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const review = await Review.findById(req.params.id)
@@ -142,10 +134,9 @@ router.get('/:id', validateObjectId, async (req, res) => {
     }
 });
 
-/**
- * POST /api/reviews/recipe/:recipeId
- * Create a new review for a recipe
- */
+
+//POST /api/reviews/recipe/:recipeId
+//Create a new review for a recipe
 router.post('/recipe/:recipeId', isAuthenticated, validateReview, async (req, res) => {
     try {
         const { recipeId } = req.params;
@@ -227,10 +218,9 @@ router.post('/recipe/:recipeId', isAuthenticated, validateReview, async (req, re
     }
 });
 
-/**
- * PUT /api/reviews/:id
- * Update a review
- */
+
+//PUT /api/reviews/:id
+//Update a review
 router.put('/:id', isAuthenticated, validateObjectId, validateReview, async (req, res) => {
     try {
         const review = await Review.findById(req.params.id);
@@ -286,10 +276,9 @@ router.put('/:id', isAuthenticated, validateObjectId, validateReview, async (req
     }
 });
 
-/**
- * DELETE /api/reviews/:id
- * Delete a review
- */
+
+//DELETE /api/reviews/:id
+//Delete a review
 router.delete('/:id', isAuthenticated, validateObjectId, async (req, res) => {
     try {
         const review = await Review.findById(req.params.id);
@@ -325,10 +314,9 @@ router.delete('/:id', isAuthenticated, validateObjectId, async (req, res) => {
     }
 });
 
-/**
- * POST /api/reviews/:id/helpful
- * Mark a review as helpful
- */
+
+//POST /api/reviews/:id/helpful
+//Mark a review as helpful
 router.post('/:id/helpful', isAuthenticated, validateObjectId, async (req, res) => {
     try {
         const review = await Review.findByIdAndUpdate(
@@ -358,10 +346,9 @@ router.post('/:id/helpful', isAuthenticated, validateObjectId, async (req, res) 
     }
 });
 
-/**
- * GET /api/reviews/check/:recipeId
- * Check if current user has reviewed a recipe
- */
+
+//GET /api/reviews/check/:recipeId
+//Check if current user has reviewed a recipe
 router.get('/check/:recipeId', isAuthenticated, async (req, res) => {
     try {
         const review = await Review.findOne({

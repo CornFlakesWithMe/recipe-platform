@@ -1,11 +1,3 @@
-/**
- * Recipe Sharing Platform - Main Server
- * CIS 435 Full Stack Web Application
- * 
- * A complete recipe sharing platform with user authentication,
- * CRUD operations, reviews, and favorites functionality.
- */
-
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -27,10 +19,8 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// ======================
-// Middleware Configuration
-// ======================
 
+// Middleware Configuration
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -64,18 +54,14 @@ app.use(attachUser);
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ======================
-// API Routes
-// ======================
 
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/reviews', reviewRoutes);
 
-// ======================
-// Health Check
-// ======================
 
+// Health Check
 app.get('/api/health', (req, res) => {
     res.json({
         success: true,
@@ -85,10 +71,8 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// ======================
-// Serve Frontend Routes
-// ======================
 
+// Serve Frontend Routes
 // Serve index.html for all non-API routes (SPA support)
 app.get('*', (req, res) => {
     // Check if requesting an HTML file
@@ -108,10 +92,8 @@ app.get('*', (req, res) => {
     }
 });
 
-// ======================
-// Error Handling
-// ======================
 
+// Error Handling
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {
     res.status(404).json({
@@ -147,25 +129,23 @@ app.use((err, req, res, next) => {
     });
 });
 
-// ======================
-// Start Server
-// ======================
 
+// Start Server
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`
-╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║     🍳 Recipe Sharing Platform Server                     ║
-║                                                            ║
-║     Environment: ${(process.env.NODE_ENV || 'development').padEnd(39)}║
-║     Port: ${String(PORT).padEnd(47)}║
-║     URL: http://localhost:${String(PORT).padEnd(32)}║
-║                                                            ║
-║     Ready to accept connections!                           ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
+
+                                                            
+       Recipe Sharing Platform Server                     
+                                                            
+       Environment: ${(process.env.NODE_ENV || 'development').padEnd(39)}
+       Port: ${String(PORT).padEnd(47)}║
+       URL: http://localhost:${String(PORT).padEnd(32)}║
+                                                           
+       Ready to accept connections!                          
+                                                            
+
     `);
 });
 

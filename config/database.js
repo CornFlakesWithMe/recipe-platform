@@ -1,14 +1,8 @@
-/**
- * Database Configuration
- * Handles MongoDB connection using Mongoose
- */
-
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGODB_URI, {
-            // Mongoose 6+ no longer requires these options, but included for clarity
         });
 
         console.log(`MongoDB Connected: ${conn.connection.host}`);
@@ -22,7 +16,7 @@ const connectDB = async () => {
             console.log('MongoDB disconnected');
         });
 
-        // Graceful shutdown
+        //shutdown
         process.on('SIGINT', async () => {
             await mongoose.connection.close();
             console.log('MongoDB connection closed due to app termination');
