@@ -3,6 +3,7 @@
  * Full CRUD operations for recipes
  */
 
+const parseFormData = require('../middleware/parseFormData');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -340,7 +341,7 @@ router.get('/:id', validateObjectId, async (req, res) => {
  * POST /api/recipes
  * Create a new recipe
  */
-router.post('/', isAuthenticated, upload.single('image'), validateRecipe, async (req, res) => {
+router.post('/', isAuthenticated, upload.single('image'), parseFormData, validateRecipe, async (req, res) => {
     try {
         // Parse JSON strings from FormData
         if (typeof req.body.ingredients === 'string') {
