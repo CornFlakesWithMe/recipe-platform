@@ -312,6 +312,12 @@
                 e.preventDefault();
                 
                 const submitBtn = form.querySelector('button[type="submit"]');
+
+                // Prevent double submission
+                if (submitBtn.disabled) {
+                    return;
+                }
+                
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Creating...';
 
@@ -404,7 +410,6 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', initRecipeForm);
     </script>
 </body>
 </html>
