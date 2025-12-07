@@ -2,28 +2,12 @@ const parseFormData = require('../middleware/parseFormData');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { cloudinary, storage } = require('../config/cloudinary');
 const Recipe = require('../models/Recipe');
 const User = require('../models/User');
 const { isAuthenticated, isOwner } = require('../middleware/auth');
 const { validateRecipe, validateObjectId, validateSearch } = require('../middleware/validation');
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = './public/images/recipes';
-        // Create directory if it doesn't exist
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'recipe-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
@@ -393,9 +377,9 @@ router.post('/', isAuthenticated, upload.single('image'), parseFormData, validat
             recipeData.nutritionInfo = JSON.parse(recipeData.nutritionInfo);
         }
 
-        // Add image path if uploaded
+        // Add image URL if uploaded (Cloudinary returns the full URL in req.file.path)
         if (req.file) {
-            recipeData.image = '/images/recipes/' + req.file.filename;
+            recipeData.image = req.file.path;
         }
 
         const recipe = new Recipe(recipeData);
@@ -412,13 +396,6 @@ router.post('/', isAuthenticated, upload.single('image'), parseFormData, validat
 
     } catch (error) {
         console.error('Create recipe error:', error);
-
-        // Delete uploaded file if there was an error
-        if (req.file) {
-            fs.unlink(req.file.path, (err) => {
-                if (err) console.error('Error deleting file:', err);
-            });
-        }
 
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -478,14 +455,19 @@ router.put('/:id', isAuthenticated, validateObjectId, upload.single('image'), as
 
         // Handle image upload
         if (req.file) {
-            // Delete old image if it's not the default
-            if (recipe.image && !recipe.image.includes('default-recipe')) {
-                const oldImagePath = './public' + recipe.image;
-                fs.unlink(oldImagePath, (err) => {
-                    if (err) console.error('Error deleting old image:', err);
-                });
+            // Delete old image from Cloudinary if exists
+            if (recipe.image && recipe.image.includes('cloudinary')) {
+                try {
+                    // Extract public ID from Cloudinary URL
+                    const urlParts = recipe.image.split('/');
+                    const publicIdWithExtension = urlParts.slice(-2).join('/');
+                    const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, '');
+                    await cloudinary.uploader.destroy(publicId);
+                } catch (err) {
+                    console.error('Error deleting old image from Cloudinary:', err);
+                }
             }
-            updateData.image = '/images/recipes/' + req.file.filename;
+            updateData.image = req.file.path;
         }
 
         // Update the recipe
@@ -503,12 +485,6 @@ router.put('/:id', isAuthenticated, validateObjectId, upload.single('image'), as
 
     } catch (error) {
         console.error('Update recipe error:', error);
-
-        if (req.file) {
-            fs.unlink(req.file.path, (err) => {
-                if (err) console.error('Error deleting file:', err);
-            });
-        }
 
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -547,11 +523,16 @@ router.delete('/:id', isAuthenticated, validateObjectId, async (req, res) => {
         }
 
         // Delete recipe image if not default
-        if (recipe.image && !recipe.image.includes('default-recipe')) {
-            const imagePath = './public' + recipe.image;
-            fs.unlink(imagePath, (err) => {
-                if (err) console.error('Error deleting image:', err);
-            });
+        // Delete recipe image from Cloudinary if exists
+        if (recipe.image && recipe.image.includes('cloudinary')) {
+            try {
+                const urlParts = recipe.image.split('/');
+                const publicIdWithExtension = urlParts.slice(-2).join('/');
+                const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, '');
+                await cloudinary.uploader.destroy(publicId);
+            } catch (err) {
+                console.error('Error deleting image from Cloudinary:', err);
+            }
         }
 
         await Recipe.findByIdAndDelete(req.params.id);
