@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlavorShare - Share Your Recipes with the World</title>
+    <meta name="description" content="Discover and share delicious recipes from around the world. Join our community of food lovers!">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body data-page="home">
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🍳</span>
+                    <span>FlavorShare</span>
+                </a>
+                
+                <nav class="nav">
+                    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                        ☰
+                    </button>
+                    
+                    <ul class="nav-links" id="nav-links">
+                        <li><a href="/" class="nav-link active">Home</a></li>
+                        <li><a href="/recipes.html" class="nav-link">Browse Recipes</a></li>
+                        <li><a href="/create-recipe.html" class="nav-link">Add Recipe</a></li>
+                    </ul>
+                    
+                    <div class="nav-actions">
+                        <!-- Shown when logged out -->
+                        <div id="auth-buttons">
+                            <a href="/login.html" class="btn btn-ghost">Log In</a>
+                            <a href="/register.html" class="btn btn-primary">Sign Up</a>
+                        </div>
+                        
+                        <!-- Shown when logged in -->
+                        <div id="user-menu" class="d-none">
+                            <a href="/profile.html" class="btn btn-ghost">
+                                <span>👤</span>
+                                <span id="username-display">User</span>
+                            </a>
+                            <a href="#" id="logout-btn" class="btn btn-outline">Log Out</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Alert Container -->
+        <div id="alert-container"></div>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-title">Discover & Share Amazing Recipes</h1>
+                <p class="hero-subtitle">Join thousands of food lovers sharing their favorite recipes from around the world.</p>
+                
+                <div class="hero-search">
+                    <form class="search-box" id="hero-search-form">
+                        <input type="text" id="hero-search-input" placeholder="Search for recipes, ingredients, cuisines..." aria-label="Search recipes">
+                        <button type="submit" class="btn btn-primary">
+                            <span>🔍</span>
+                            <span>Search</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Featured Recipes Section -->
+            <section class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">⭐ Featured Recipes</h2>
+                        <a href="/recipes.html?sortBy=averageRating" class="btn btn-outline">View All</a>
+                    </div>
+                    
+                    <div class="recipe-grid" id="featured-recipes">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Recipes Section -->
+            <section class="section" style="background-color: var(--white);">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">🕐 Recently Added</h2>
+                        <a href="/recipes.html?sortBy=createdAt" class="btn btn-outline">View All</a>
+                    </div>
+                    
+                    <div class="recipe-grid" id="recent-recipes">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">📂 Browse by Category</h2>
+                    </div>
+                    
+                    <div class="recipe-grid" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
+                        <a href="/recipes.html?category=breakfast" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🍳</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Breakfast</h3>
+                        </a>
+                        <a href="/recipes.html?category=lunch" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🥗</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Lunch</h3>
+                        </a>
+                        <a href="/recipes.html?category=dinner" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🍝</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Dinner</h3>
+                        </a>
+                        <a href="/recipes.html?category=dessert" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🍰</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Desserts</h3>
+                        </a>
+                        <a href="/recipes.html?category=appetizer" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🧆</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Appetizers</h3>
+                        </a>
+                        <a href="/recipes.html?category=soup" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🍲</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Soups</h3>
+                        </a>
+                        <a href="/recipes.html?category=beverage" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🍹</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Beverages</h3>
+                        </a>
+                        <a href="/recipes.html?category=snack" class="card text-center" style="padding: var(--spacing-lg);">
+                            <span style="font-size: 2.5rem;">🍿</span>
+                            <h3 style="margin-top: var(--spacing-sm); font-size: 1rem;">Snacks</h3>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Call to Action -->
+            <section class="section" style="background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark)); color: var(--white); text-align: center;">
+                <div class="container">
+                    <h2 style="font-size: 2rem; margin-bottom: var(--spacing-md);">Ready to Share Your Recipe?</h2>
+                    <p style="font-size: 1.125rem; margin-bottom: var(--spacing-xl); opacity: 0.9;">Join our community and inspire others with your culinary creations!</p>
+                    <a href="/register.html" class="btn btn-lg" style="background-color: var(--white); color: var(--secondary-dark);">Get Started Free</a>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>FlavorShare</h3>
+                        <p>Share your passion for cooking with the world. Discover new recipes and connect with food lovers everywhere.</p>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="/recipes.html">Browse Recipes</a></li>
+                            <li><a href="/create-recipe.html">Add Recipe</a></li>
+                            <li><a href="/register.html">Sign Up</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Categories</h3>
+                        <ul>
+                            <li><a href="/recipes.html?category=breakfast">Breakfast</a></li>
+                            <li><a href="/recipes.html?category=lunch">Lunch</a></li>
+                            <li><a href="/recipes.html?category=dinner">Dinner</a></li>
+                            <li><a href="/recipes.html?category=dessert">Desserts</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li>📧 hello@flavorshare.com</li>
+                            <li>📍 University of Michigan - Dearborn</li>
+                            <li>CIS 435 Project</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>© 2024 FlavorShare. CIS 435 Full Stack Project - University of Michigan-Dearborn.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

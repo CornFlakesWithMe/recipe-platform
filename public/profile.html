@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - FlavorShare</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="profile">
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="container">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🍳</span>
+                    <span>FlavorShare</span>
+                </a>
+                <nav class="nav">
+                    <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+                    <ul class="nav-links" id="nav-links">
+                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="/recipes.html" class="nav-link">Browse Recipes</a></li>
+                        <li><a href="/create-recipe.html" class="nav-link">Add Recipe</a></li>
+                    </ul>
+                    <div class="nav-actions">
+                        <div id="auth-buttons">
+                            <a href="/login.html" class="btn btn-ghost">Log In</a>
+                            <a href="/register.html" class="btn btn-primary">Sign Up</a>
+                        </div>
+                        <div id="user-menu" class="d-none">
+                            <a href="/profile.html" class="btn btn-ghost">
+                                <span>👤</span>
+                                <span id="username-display">User</span>
+                            </a>
+                            <a href="#" id="logout-btn" class="btn btn-outline">Log Out</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <main>
+            <div class="container">
+                <!-- Profile Header -->
+                <div id="profile-header" class="profile-header">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="showTab('recipes')">My Recipes</button>
+                    <button class="tab-btn" onclick="showTab('favorites')">Favorites</button>
+                    <button class="tab-btn" onclick="showTab('settings')">Settings</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="recipes-tab" class="tab-content active">
+                    <div class="section-header">
+                        <h2>My Recipes</h2>
+                        <a href="/create-recipe.html" class="btn btn-primary">+ New Recipe</a>
+                    </div>
+                    <div id="my-recipes-grid" class="recipe-grid">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="favorites-tab" class="tab-content">
+                    <h2 class="mb-4">Favorite Recipes</h2>
+                    <div id="favorites-grid" class="recipe-grid">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-tab" class="tab-content">
+                    <div class="card" style="padding: var(--spacing-xl); max-width: 600px;">
+                        <h2 class="mb-4">Profile Settings</h2>
+                        
+                        <form id="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" class="form-input">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bio" class="form-label">Bio</label>
+                                <textarea id="bio" name="bio" class="form-textarea" placeholder="Tell us about yourself..." maxlength="500"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+
+                        <hr style="margin: var(--spacing-xl) 0; border-color: var(--gray-200);">
+
+                        <h3 class="mb-3">Change Password</h3>
+                        <form id="password-form">
+                            <div class="form-group">
+                                <label for="currentPassword" class="form-label">Current Password</label>
+                                <input type="password" id="currentPassword" name="currentPassword" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword" class="form-label">New Password</label>
+                                <input type="password" id="newPassword" name="newPassword" class="form-input" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                                <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-input" required>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Change Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-bottom">
+                    <p>© 2024 FlavorShare. CIS 435 Full Stack Project.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        let profileData = null;
+
+        async function initProfilePage() {
+            // Check auth
+            const authCheck = await AuthAPI.checkAuth();
+            if (!authCheck.isLoggedIn) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            await loadProfile();
+            await loadMyRecipes();
+            setupForms();
+        }
+
+        async function loadProfile() {
+            const container = document.getElementById('profile-header');
+            
+            try {
+                const data = await AuthAPI.getProfile();
+                profileData = data;
+                
+                // Count recipes
+                const recipesData = await RecipeAPI.getMyRecipes();
+                const recipeCount = recipesData.recipes?.length || 0;
+                
+                container.innerHTML = `
+                    <img src="${data.user.profileImage || '/images/default-avatar.png'}" alt="${data.user.username}" class="profile-avatar">
+                    <div class="profile-info">
+                        <h1>${data.user.username}</h1>
+                        ${data.user.firstName || data.user.lastName ? `<p>${data.user.firstName || ''} ${data.user.lastName || ''}</p>` : ''}
+                        ${data.user.bio ? `<p style="color: var(--gray-600);">${data.user.bio}</p>` : ''}
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">${recipeCount}</span>
+                                <span class="stat-label">Recipes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${data.favorites?.length || 0}</span>
+                                <span class="stat-label">Favorites</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Fill settings form
+                document.getElementById('firstName').value = data.user.firstName || '';
+                document.getElementById('lastName').value = data.user.lastName || '';
+                document.getElementById('bio').value = data.user.bio || '';
+
+            } catch (error) {
+                container.innerHTML = '<p class="text-center text-error">Failed to load profile</p>';
+            }
+        }
+
+        async function loadMyRecipes() {
+            const container = document.getElementById('my-recipes-grid');
+            
+            try {
+                const data = await RecipeAPI.getMyRecipes();
+                
+                if (!data.recipes || data.recipes.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <div class="empty-state-icon">📝</div>
+                            <h3>No recipes yet</h3>
+                            <p>Share your first recipe with the community!</p>
+                            <a href="/create-recipe.html" class="btn btn-primary">Create Recipe</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.recipes.forEach(recipe => {
+                    container.appendChild(createRecipeCard(recipe));
+                });
+
+            } catch (error) {
+                container.innerHTML = '<p class="text-center text-error">Failed to load recipes</p>';
+            }
+        }
+
+        async function loadFavorites() {
+            const container = document.getElementById('favorites-grid');
+            
+            if (profileData?.favorites && profileData.favorites.length > 0) {
+                container.innerHTML = '';
+                profileData.favorites.forEach(recipe => {
+                    container.appendChild(createRecipeCard(recipe));
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">❤️</div>
+                        <h3>No favorites yet</h3>
+                        <p>Save recipes you love to find them easily later.</p>
+                        <a href="/recipes.html" class="btn btn-primary">Browse Recipes</a>
+                    </div>
+                `;
+            }
+        }
+
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // Load favorites if needed
+            if (tabName === 'favorites') {
+                loadFavorites();
+            }
+        }
+
+        function setupForms() {
+            // Profile form
+            document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                try {
+                    await AuthAPI.updateProfile({
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        bio: document.getElementById('bio').value
+                    });
+                    
+                    showAlert('Profile updated successfully!', 'success');
+                    await loadProfile();
+                    
+                } catch (error) {
+                    showAlert(error.message || 'Failed to update profile', 'error');
+                }
+            });
+
+            // Password form
+            document.getElementById('password-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+                
+                if (newPassword !== confirmNewPassword) {
+                    showAlert('New passwords do not match', 'error');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/auth/password', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            currentPassword: document.getElementById('currentPassword').value,
+                            newPassword: newPassword
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showAlert('Password changed successfully!', 'success');
+                        document.getElementById('password-form').reset();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                    
+                } catch (error) {
+                    showAlert(error.message || 'Failed to change password', 'error');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initProfilePage, 100);
+        });
+    </script>
+</body>
+</html>

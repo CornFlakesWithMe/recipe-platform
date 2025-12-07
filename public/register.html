@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - FlavorShare</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="register">
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="container">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🍳</span>
+                    <span>FlavorShare</span>
+                </a>
+            </div>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <main>
+            <div class="container">
+                <div class="auth-container">
+                    <div class="auth-header">
+                        <h1>Join FlavorShare</h1>
+                        <p>Create an account to share your recipes</p>
+                    </div>
+
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="username" class="form-label required">Username</label>
+                            <input type="text" id="username" name="username" class="form-input" placeholder="Choose a username" required minlength="3" maxlength="30">
+                            <span class="form-hint">3-30 characters, letters, numbers, and underscores only</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label required">Email</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" placeholder="John">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Doe">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label required">Password</label>
+                            <input type="password" id="password" name="password" class="form-input" placeholder="Create a password" required minlength="6">
+                            <span class="form-hint">At least 6 characters</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label required">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Create Account</button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="/login.html">Log in here</a></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-bottom">
+                    <p>© 2024 FlavorShare. CIS 435 Full Stack Project.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        function initRegisterPage() {
+            const form = document.getElementById('register-form');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    showAlert('Passwords do not match', 'error');
+                    return;
+                }
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating account...';
+                
+                try {
+                    const formData = new FormData(form);
+                    const data = await AuthAPI.register({
+                        username: formData.get('username'),
+                        email: formData.get('email'),
+                        password: formData.get('password'),
+                        confirmPassword: formData.get('confirmPassword'),
+                        firstName: formData.get('firstName'),
+                        lastName: formData.get('lastName')
+                    });
+                    
+                    showAlert('Account created successfully! Redirecting...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                    
+                } catch (error) {
+                    showAlert(error.message || 'Registration failed', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Account';
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', initRegisterPage);
+    </script>
+</body>
+</html>

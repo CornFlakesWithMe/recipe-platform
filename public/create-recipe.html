@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Recipe - FlavorShare</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="create-recipe">
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="container">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🍳</span>
+                    <span>FlavorShare</span>
+                </a>
+                <nav class="nav">
+                    <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+                    <ul class="nav-links" id="nav-links">
+                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="/recipes.html" class="nav-link">Browse Recipes</a></li>
+                        <li><a href="/create-recipe.html" class="nav-link active">Add Recipe</a></li>
+                    </ul>
+                    <div class="nav-actions">
+                        <div id="auth-buttons">
+                            <a href="/login.html" class="btn btn-ghost">Log In</a>
+                            <a href="/register.html" class="btn btn-primary">Sign Up</a>
+                        </div>
+                        <div id="user-menu" class="d-none">
+                            <a href="/profile.html" class="btn btn-ghost">
+                                <span>👤</span>
+                                <span id="username-display">User</span>
+                            </a>
+                            <a href="#" id="logout-btn" class="btn btn-outline">Log Out</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <main>
+            <div class="container" style="max-width: 800px;">
+                <div class="section-header">
+                    <h1 class="section-title">🍽️ Add New Recipe</h1>
+                </div>
+
+                <div id="auth-required" class="card text-center d-none" style="padding: var(--spacing-2xl);">
+                    <h2>Please Log In</h2>
+                    <p class="mt-2 mb-4">You need to be logged in to create a recipe.</p>
+                    <a href="/login.html" class="btn btn-primary">Log In</a>
+                </div>
+
+                <form id="recipe-form" class="card" style="padding: var(--spacing-xl);">
+                    <!-- Basic Info -->
+                    <h2 class="mb-3">📝 Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="title" class="form-label required">Recipe Title</label>
+                        <input type="text" id="title" name="title" class="form-input" placeholder="e.g., Grandma's Chocolate Chip Cookies" required minlength="3" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label required">Description</label>
+                        <textarea id="description" name="description" class="form-textarea" placeholder="Describe your recipe..." required minlength="10" maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image" class="form-label">Recipe Image</label>
+                        <input type="file" id="image" name="image" class="form-input" accept="image/jpeg,image/png,image/gif,image/webp">
+                        <span class="form-hint">Max 5MB. JPG, PNG, GIF, or WebP</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category" class="form-label required">Category</label>
+                            <select id="category" name="category" class="form-select" required>
+                                <option value="">Select category</option>
+                                <option value="breakfast">Breakfast</option>
+                                <option value="lunch">Lunch</option>
+                                <option value="dinner">Dinner</option>
+                                <option value="appetizer">Appetizer</option>
+                                <option value="dessert">Dessert</option>
+                                <option value="snack">Snack</option>
+                                <option value="beverage">Beverage</option>
+                                <option value="soup">Soup</option>
+                                <option value="salad">Salad</option>
+                                <option value="side-dish">Side Dish</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cuisine" class="form-label">Cuisine</label>
+                            <input type="text" id="cuisine" name="cuisine" class="form-input" placeholder="e.g., Italian, Mexican, Thai">
+                        </div>
+                        <div class="form-group">
+                            <label for="difficulty" class="form-label required">Difficulty</label>
+                            <select id="difficulty" name="difficulty" class="form-select" required>
+                                <option value="">Select difficulty</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prepTime" class="form-label required">Prep Time (minutes)</label>
+                            <input type="number" id="prepTime" name="prepTime" class="form-input" min="0" max="1440" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cookTime" class="form-label required">Cook Time (minutes)</label>
+                            <input type="number" id="cookTime" name="cookTime" class="form-input" min="0" max="1440" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="servings" class="form-label required">Servings</label>
+                            <input type="number" id="servings" name="servings" class="form-input" min="1" max="100" required>
+                        </div>
+                    </div>
+
+                    <!-- Ingredients -->
+                    <h2 class="mb-3 mt-4">🥘 Ingredients</h2>
+                    
+                    <div id="ingredients-container">
+                        <div class="ingredient-row form-row" style="align-items: flex-end;">
+                            <div class="form-group" style="flex: 1;">
+                                <label class="form-label">Amount</label>
+                                <input type="text" name="ingredient-amount[]" class="form-input" placeholder="1" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label class="form-label">Unit</label>
+                                <input type="text" name="ingredient-unit[]" class="form-input" placeholder="cup">
+                            </div>
+                            <div class="form-group" style="flex: 3;">
+                                <label class="form-label">Ingredient</label>
+                                <input type="text" name="ingredient-name[]" class="form-input" placeholder="all-purpose flour" required>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-icon" onclick="removeIngredient(this)" title="Remove">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline mt-2" onclick="addIngredient()">+ Add Ingredient</button>
+
+                    <!-- Instructions -->
+                    <h2 class="mb-3 mt-4">👨‍🍳 Instructions</h2>
+                    
+                    <div id="instructions-container">
+                        <div class="instruction-row d-flex gap-2 mb-2" style="align-items: flex-start;">
+                            <span class="instruction-number" style="margin-top: 8px;">1</span>
+                            <textarea name="instruction[]" class="form-textarea" style="min-height: 80px;" placeholder="Describe this step..." required></textarea>
+                            <button type="button" class="btn btn-ghost btn-icon" onclick="removeInstruction(this)" title="Remove">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline mt-2" onclick="addInstruction()">+ Add Step</button>
+
+                    <!-- Dietary Info -->
+                    <h2 class="mb-3 mt-4">🏷️ Dietary Information</h2>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        <label class="form-check">
+                            <input type="checkbox" name="vegetarian">
+                            <span>🥬 Vegetarian</span>
+                        </label>
+                        <label class="form-check">
+                            <input type="checkbox" name="vegan">
+                            <span>🌱 Vegan</span>
+                        </label>
+                        <label class="form-check">
+                            <input type="checkbox" name="glutenFree">
+                            <span>🌾 Gluten-Free</span>
+                        </label>
+                        <label class="form-check">
+                            <input type="checkbox" name="dairyFree">
+                            <span>🥛 Dairy-Free</span>
+                        </label>
+                        <label class="form-check">
+                            <input type="checkbox" name="nutFree">
+                            <span>🥜 Nut-Free</span>
+                        </label>
+                    </div>
+
+                    <!-- Nutrition (Optional) -->
+                    <h2 class="mb-3 mt-4">📊 Nutrition Info (Optional)</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="calories" class="form-label">Calories</label>
+                            <input type="number" id="calories" name="calories" class="form-input" min="0" placeholder="Per serving">
+                        </div>
+                        <div class="form-group">
+                            <label for="protein" class="form-label">Protein (g)</label>
+                            <input type="number" id="protein" name="protein" class="form-input" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="carbs" class="form-label">Carbs (g)</label>
+                            <input type="number" id="carbs" name="carbs" class="form-input" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="fat" class="form-label">Fat (g)</label>
+                            <input type="number" id="fat" name="fat" class="form-input" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-group mt-4">
+                        <label for="tags" class="form-label">Tags</label>
+                        <input type="text" id="tags" name="tags" class="form-input" placeholder="e.g., quick, healthy, comfort food (comma separated)">
+                        <span class="form-hint">Separate tags with commas</span>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Create Recipe</button>
+                        <a href="/recipes.html" class="btn btn-ghost btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-bottom">
+                    <p>© 2024 FlavorShare. CIS 435 Full Stack Project.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        let ingredientCount = 1;
+        let instructionCount = 1;
+
+        function addIngredient() {
+            ingredientCount++;
+            const container = document.getElementById('ingredients-container');
+            const row = document.createElement('div');
+            row.className = 'ingredient-row form-row';
+            row.style.alignItems = 'flex-end';
+            row.innerHTML = `
+                <div class="form-group" style="flex: 1;">
+                    <input type="text" name="ingredient-amount[]" class="form-input" placeholder="1" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <input type="text" name="ingredient-unit[]" class="form-input" placeholder="cup">
+                </div>
+                <div class="form-group" style="flex: 3;">
+                    <input type="text" name="ingredient-name[]" class="form-input" placeholder="ingredient name" required>
+                </div>
+                <button type="button" class="btn btn-ghost btn-icon" onclick="removeIngredient(this)" title="Remove">🗑️</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeIngredient(btn) {
+            const container = document.getElementById('ingredients-container');
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                showAlert('You need at least one ingredient', 'warning');
+            }
+        }
+
+        function addInstruction() {
+            instructionCount++;
+            const container = document.getElementById('instructions-container');
+            const row = document.createElement('div');
+            row.className = 'instruction-row d-flex gap-2 mb-2';
+            row.style.alignItems = 'flex-start';
+            row.innerHTML = `
+                <span class="instruction-number" style="margin-top: 8px;">${container.children.length + 1}</span>
+                <textarea name="instruction[]" class="form-textarea" style="min-height: 80px;" placeholder="Describe this step..." required></textarea>
+                <button type="button" class="btn btn-ghost btn-icon" onclick="removeInstruction(this)" title="Remove">🗑️</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeInstruction(btn) {
+            const container = document.getElementById('instructions-container');
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+                updateInstructionNumbers();
+            } else {
+                showAlert('You need at least one instruction', 'warning');
+            }
+        }
+
+        function updateInstructionNumbers() {
+            const container = document.getElementById('instructions-container');
+            const rows = container.querySelectorAll('.instruction-row');
+            rows.forEach((row, index) => {
+                row.querySelector('.instruction-number').textContent = index + 1;
+            });
+        }
+
+        async function initRecipeForm() {
+            // Check if user is logged in
+            const authCheck = await AuthAPI.checkAuth();
+            
+            if (!authCheck.isLoggedIn) {
+                document.getElementById('recipe-form').classList.add('d-none');
+                document.getElementById('auth-required').classList.remove('d-none');
+                return;
+            }
+
+            const form = document.getElementById('recipe-form');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating...';
+
+                try {
+                    // Gather ingredients
+                    const amounts = form.querySelectorAll('input[name="ingredient-amount[]"]');
+                    const units = form.querySelectorAll('input[name="ingredient-unit[]"]');
+                    const names = form.querySelectorAll('input[name="ingredient-name[]"]');
+                    
+                    const ingredients = [];
+                    for (let i = 0; i < names.length; i++) {
+                        if (names[i].value.trim()) {
+                            ingredients.push({
+                                amount: amounts[i].value.trim(),
+                                unit: units[i].value.trim(),
+                                name: names[i].value.trim()
+                            });
+                        }
+                    }
+
+                    // Gather instructions
+                    const instructionTextareas = form.querySelectorAll('textarea[name="instruction[]"]');
+                    const instructions = [];
+                    instructionTextareas.forEach((textarea, index) => {
+                        if (textarea.value.trim()) {
+                            instructions.push({
+                                stepNumber: index + 1,
+                                instruction: textarea.value.trim()
+                            });
+                        }
+                    });
+
+                    // Gather tags
+                    const tagsInput = form.querySelector('#tags').value;
+                    const tags = tagsInput.split(',').map(t => t.trim()).filter(t => t);
+
+                    // Build form data
+                    const formData = new FormData();
+                    formData.append('title', form.querySelector('#title').value);
+                    formData.append('description', form.querySelector('#description').value);
+                    formData.append('category', form.querySelector('#category').value);
+                    formData.append('cuisine', form.querySelector('#cuisine').value);
+                    formData.append('difficulty', form.querySelector('#difficulty').value);
+                    formData.append('prepTime', form.querySelector('#prepTime').value);
+                    formData.append('cookTime', form.querySelector('#cookTime').value);
+                    formData.append('servings', form.querySelector('#servings').value);
+                    formData.append('ingredients', JSON.stringify(ingredients));
+                    formData.append('instructions', JSON.stringify(instructions));
+                    formData.append('tags', JSON.stringify(tags));
+                    
+                    // Dietary info
+                    formData.append('dietaryInfo', JSON.stringify({
+                        vegetarian: form.querySelector('input[name="vegetarian"]').checked,
+                        vegan: form.querySelector('input[name="vegan"]').checked,
+                        glutenFree: form.querySelector('input[name="glutenFree"]').checked,
+                        dairyFree: form.querySelector('input[name="dairyFree"]').checked,
+                        nutFree: form.querySelector('input[name="nutFree"]').checked
+                    }));
+                    
+                    // Nutrition info
+                    const nutritionInfo = {};
+                    if (form.querySelector('#calories').value) nutritionInfo.calories = parseInt(form.querySelector('#calories').value);
+                    if (form.querySelector('#protein').value) nutritionInfo.protein = parseInt(form.querySelector('#protein').value);
+                    if (form.querySelector('#carbs').value) nutritionInfo.carbs = parseInt(form.querySelector('#carbs').value);
+                    if (form.querySelector('#fat').value) nutritionInfo.fat = parseInt(form.querySelector('#fat').value);
+                    formData.append('nutritionInfo', JSON.stringify(nutritionInfo));
+
+                    // Image
+                    const imageFile = form.querySelector('#image').files[0];
+                    if (imageFile) {
+                        formData.append('image', imageFile);
+                    }
+
+                    const response = await RecipeAPI.create(formData);
+                    
+                    if (response.success) {
+                        showAlert('Recipe created successfully!', 'success');
+                        setTimeout(() => {
+                            window.location.href = `/recipe.html?id=${response.recipe._id}`;
+                        }, 1500);
+                    } else {
+                        throw new Error(response.message);
+                    }
+
+                } catch (error) {
+                    showAlert(error.message || 'Failed to create recipe', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Recipe';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initRecipeForm);
+    </script>
+</body>
+</html>

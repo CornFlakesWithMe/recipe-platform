@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Recipes - FlavorShare</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="recipes">
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🍳</span>
+                    <span>FlavorShare</span>
+                </a>
+                
+                <nav class="nav">
+                    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+                    
+                    <ul class="nav-links" id="nav-links">
+                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="/recipes.html" class="nav-link active">Browse Recipes</a></li>
+                        <li><a href="/create-recipe.html" class="nav-link">Add Recipe</a></li>
+                    </ul>
+                    
+                    <div class="nav-actions">
+                        <div id="auth-buttons">
+                            <a href="/login.html" class="btn btn-ghost">Log In</a>
+                            <a href="/register.html" class="btn btn-primary">Sign Up</a>
+                        </div>
+                        <div id="user-menu" class="d-none">
+                            <a href="/profile.html" class="btn btn-ghost">
+                                <span>👤</span>
+                                <span id="username-display">User</span>
+                            </a>
+                            <a href="#" id="logout-btn" class="btn btn-outline">Log Out</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <main>
+            <div class="container">
+                <div class="section-header">
+                    <h1 class="section-title">🍽️ Browse Recipes</h1>
+                </div>
+
+                <!-- Search & Filters -->
+                <div class="card mb-4" style="padding: var(--spacing-lg);">
+                    <form id="filter-form">
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="search-input" class="form-label">Search</label>
+                                <input type="text" id="search-input" class="form-input" placeholder="Search recipes...">
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="category-filter" class="form-label">Category</label>
+                                <select id="category-filter" name="category" class="form-select">
+                                    <option value="">All Categories</option>
+                                    <option value="breakfast">Breakfast</option>
+                                    <option value="lunch">Lunch</option>
+                                    <option value="dinner">Dinner</option>
+                                    <option value="appetizer">Appetizer</option>
+                                    <option value="dessert">Dessert</option>
+                                    <option value="snack">Snack</option>
+                                    <option value="beverage">Beverage</option>
+                                    <option value="soup">Soup</option>
+                                    <option value="salad">Salad</option>
+                                    <option value="side-dish">Side Dish</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="difficulty-filter" class="form-label">Difficulty</label>
+                                <select id="difficulty-filter" name="difficulty" class="form-select">
+                                    <option value="">All Levels</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="sort-filter" class="form-label">Sort By</label>
+                                <select id="sort-filter" name="sortBy" class="form-select">
+                                    <option value="createdAt">Newest</option>
+                                    <option value="averageRating">Top Rated</option>
+                                    <option value="views">Most Viewed</option>
+                                    <option value="title">Alphabetical</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                            <label class="form-check">
+                                <input type="checkbox" name="vegetarian" value="true">
+                                <span>🥬 Vegetarian</span>
+                            </label>
+                            <label class="form-check">
+                                <input type="checkbox" name="vegan" value="true">
+                                <span>🌱 Vegan</span>
+                            </label>
+                            <label class="form-check">
+                                <input type="checkbox" name="glutenFree" value="true">
+                                <span>🌾 Gluten-Free</span>
+                            </label>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <button type="reset" class="btn btn-ghost" onclick="window.location.href='/recipes.html'">Clear All</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recipes Grid -->
+                <div class="recipe-grid" id="recipes-grid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="pagination"></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-bottom">
+                    <p>© 2024 FlavorShare. CIS 435 Full Stack Project.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
