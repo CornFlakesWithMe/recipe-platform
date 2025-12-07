@@ -342,6 +342,47 @@ router.get('/:id', validateObjectId, async (req, res) => {
  */
 router.post('/', isAuthenticated, upload.single('image'), validateRecipe, async (req, res) => {
     try {
+        // Parse JSON strings from FormData
+        if (typeof req.body.ingredients === 'string') {
+            try {
+                req.body.ingredients = JSON.parse(req.body.ingredients);
+            } catch (e) {
+                req.body.ingredients = [];
+            }
+        }
+        
+        if (typeof req.body.instructions === 'string') {
+            try {
+                req.body.instructions = JSON.parse(req.body.instructions);
+            } catch (e) {
+                req.body.instructions = [];
+            }
+        }
+        
+        if (typeof req.body.tags === 'string') {
+            try {
+                req.body.tags = JSON.parse(req.body.tags);
+            } catch (e) {
+                req.body.tags = [];
+            }
+        }
+        
+        if (typeof req.body.dietaryInfo === 'string') {
+            try {
+                req.body.dietaryInfo = JSON.parse(req.body.dietaryInfo);
+            } catch (e) {
+                req.body.dietaryInfo = {};
+            }
+        }
+        
+        if (typeof req.body.nutritionInfo === 'string') {
+            try {
+                req.body.nutritionInfo = JSON.parse(req.body.nutritionInfo);
+            } catch (e) {
+                req.body.nutritionInfo = {};
+            }
+        }
+
         const recipeData = {
             ...req.body,
             author: req.session.userId
