@@ -1,28 +1,26 @@
 /**
  * Database Seed Script
  * Populates the database with sample data for testing
- * 
- * Usage: node seed.js
  */
 
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
-// Import models
 const User = require('./models/User');
 const Recipe = require('./models/Recipe');
 const Review = require('./models/Review');
 
-// Sample data
-const sampleUsers = [
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/recipe_platform';
+
+// Sample Users
+const users = [
     {
         username: 'chef_maria',
         email: 'maria@example.com',
         password: 'password123',
         firstName: 'Maria',
         lastName: 'Garcia',
-        bio: 'Passionate home cook specializing in Mediterranean cuisine.'
+        bio: 'Professional chef with 10 years of experience. Love creating Italian and Mexican cuisine!'
     },
     {
         username: 'baker_john',
@@ -30,7 +28,7 @@ const sampleUsers = [
         password: 'password123',
         firstName: 'John',
         lastName: 'Smith',
-        bio: 'Professional baker with 10 years of experience.'
+        bio: 'Home baker passionate about desserts and pastries.'
     },
     {
         username: 'foodie_sarah',
@@ -38,14 +36,15 @@ const sampleUsers = [
         password: 'password123',
         firstName: 'Sarah',
         lastName: 'Johnson',
-        bio: 'Food blogger and recipe developer.'
+        bio: 'Food enthusiast exploring cuisines from around the world.'
     }
 ];
 
-const sampleRecipes = [
+// Sample Recipes
+const recipes = [
     {
         title: 'Classic Spaghetti Carbonara',
-        description: 'An authentic Italian pasta dish made with eggs, cheese, pancetta, and black pepper. This creamy, savory dish comes together in minutes and is perfect for a quick weeknight dinner.',
+        description: 'A traditional Italian pasta dish made with eggs, cheese, pancetta, and black pepper. Creamy, savory, and absolutely delicious!',
         category: 'dinner',
         cuisine: 'Italian',
         difficulty: 'medium',
@@ -53,28 +52,40 @@ const sampleRecipes = [
         cookTime: 20,
         servings: 4,
         ingredients: [
-            { name: 'spaghetti', amount: '400', unit: 'g' },
-            { name: 'pancetta or guanciale', amount: '200', unit: 'g' },
-            { name: 'eggs', amount: '4', unit: 'large' },
-            { name: 'Pecorino Romano cheese', amount: '100', unit: 'g' },
-            { name: 'black pepper', amount: '2', unit: 'tsp' },
-            { name: 'salt', amount: '1', unit: 'tsp' }
+            { amount: '400', unit: 'g', name: 'spaghetti' },
+            { amount: '200', unit: 'g', name: 'pancetta or guanciale' },
+            { amount: '4', unit: 'large', name: 'egg yolks' },
+            { amount: '1', unit: 'cup', name: 'Pecorino Romano cheese, grated' },
+            { amount: '1', unit: 'tsp', name: 'black pepper, freshly ground' },
+            { amount: '1', unit: 'tbsp', name: 'salt for pasta water' }
         ],
         instructions: [
             { stepNumber: 1, instruction: 'Bring a large pot of salted water to boil. Cook spaghetti according to package directions until al dente.' },
             { stepNumber: 2, instruction: 'While pasta cooks, cut pancetta into small cubes and cook in a large skillet over medium heat until crispy, about 8 minutes.' },
-            { stepNumber: 3, instruction: 'In a bowl, whisk together eggs, grated Pecorino cheese, and plenty of black pepper.' },
-            { stepNumber: 4, instruction: 'Reserve 1 cup of pasta water, then drain the spaghetti.' },
-            { stepNumber: 5, instruction: 'Add hot pasta to the skillet with pancetta (off heat). Quickly pour in egg mixture, tossing constantly.' },
-            { stepNumber: 6, instruction: 'Add pasta water as needed to create a creamy sauce. Serve immediately with extra cheese and pepper.' }
+            { stepNumber: 3, instruction: 'In a bowl, whisk together egg yolks, grated Pecorino Romano, and black pepper.' },
+            { stepNumber: 4, instruction: 'Reserve 1 cup pasta water, then drain the spaghetti.' },
+            { stepNumber: 5, instruction: 'Remove skillet from heat. Add hot pasta to the pancetta and toss.' },
+            { stepNumber: 6, instruction: 'Quickly pour egg mixture over pasta, tossing constantly. Add pasta water as needed to create a creamy sauce.' },
+            { stepNumber: 7, instruction: 'Serve immediately with extra cheese and pepper on top.' }
         ],
-        tags: ['pasta', 'italian', 'quick', 'comfort food'],
-        dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, dairyFree: false, nutFree: true },
-        nutritionInfo: { calories: 650, protein: 28, carbs: 72, fat: 26 }
+        dietaryInfo: {
+            vegetarian: false,
+            vegan: false,
+            glutenFree: false,
+            dairyFree: false,
+            nutFree: true
+        },
+        nutritionInfo: {
+            calories: 650,
+            protein: 25,
+            carbs: 70,
+            fat: 28
+        },
+        tags: ['pasta', 'italian', 'quick', 'comfort food']
     },
     {
         title: 'Fluffy Blueberry Pancakes',
-        description: 'Light and fluffy pancakes bursting with fresh blueberries. Perfect for a lazy weekend breakfast with maple syrup and butter.',
+        description: 'Light and fluffy pancakes loaded with fresh blueberries. Perfect for a weekend breakfast!',
         category: 'breakfast',
         cuisine: 'American',
         difficulty: 'easy',
@@ -82,32 +93,43 @@ const sampleRecipes = [
         cookTime: 15,
         servings: 4,
         ingredients: [
-            { name: 'all-purpose flour', amount: '2', unit: 'cups' },
-            { name: 'sugar', amount: '3', unit: 'tbsp' },
-            { name: 'baking powder', amount: '2', unit: 'tsp' },
-            { name: 'salt', amount: '1/2', unit: 'tsp' },
-            { name: 'milk', amount: '1.5', unit: 'cups' },
-            { name: 'egg', amount: '1', unit: 'large' },
-            { name: 'melted butter', amount: '3', unit: 'tbsp' },
-            { name: 'vanilla extract', amount: '1', unit: 'tsp' },
-            { name: 'fresh blueberries', amount: '1', unit: 'cup' }
+            { amount: '2', unit: 'cups', name: 'all-purpose flour' },
+            { amount: '2', unit: 'tbsp', name: 'sugar' },
+            { amount: '2', unit: 'tsp', name: 'baking powder' },
+            { amount: '1', unit: 'tsp', name: 'baking soda' },
+            { amount: '1/2', unit: 'tsp', name: 'salt' },
+            { amount: '2', unit: 'cups', name: 'buttermilk' },
+            { amount: '2', unit: 'large', name: 'eggs' },
+            { amount: '4', unit: 'tbsp', name: 'melted butter' },
+            { amount: '1', unit: 'cup', name: 'fresh blueberries' }
         ],
         instructions: [
-            { stepNumber: 1, instruction: 'In a large bowl, whisk together flour, sugar, baking powder, and salt.' },
-            { stepNumber: 2, instruction: 'In another bowl, mix milk, egg, melted butter, and vanilla.' },
-            { stepNumber: 3, instruction: 'Pour wet ingredients into dry and stir until just combined. Do not overmix - lumps are okay!' },
-            { stepNumber: 4, instruction: 'Gently fold in the blueberries.' },
+            { stepNumber: 1, instruction: 'In a large bowl, whisk together flour, sugar, baking powder, baking soda, and salt.' },
+            { stepNumber: 2, instruction: 'In another bowl, whisk buttermilk, eggs, and melted butter.' },
+            { stepNumber: 3, instruction: 'Pour wet ingredients into dry ingredients and stir until just combined. Do not overmix.' },
+            { stepNumber: 4, instruction: 'Gently fold in blueberries.' },
             { stepNumber: 5, instruction: 'Heat a griddle or non-stick pan over medium heat. Lightly grease with butter.' },
-            { stepNumber: 6, instruction: 'Pour 1/4 cup batter per pancake. Cook until bubbles form on surface, then flip and cook until golden.' },
-            { stepNumber: 7, instruction: 'Serve warm with maple syrup, extra blueberries, and butter.' }
+            { stepNumber: 6, instruction: 'Pour 1/4 cup batter per pancake. Cook until bubbles form on surface, then flip.' },
+            { stepNumber: 7, instruction: 'Cook until golden brown. Serve with maple syrup and extra blueberries.' }
         ],
-        tags: ['breakfast', 'pancakes', 'blueberry', 'weekend'],
-        dietaryInfo: { vegetarian: true, vegan: false, glutenFree: false, dairyFree: false, nutFree: true },
-        nutritionInfo: { calories: 320, protein: 8, carbs: 48, fat: 11 }
+        dietaryInfo: {
+            vegetarian: true,
+            vegan: false,
+            glutenFree: false,
+            dairyFree: false,
+            nutFree: true
+        },
+        nutritionInfo: {
+            calories: 380,
+            protein: 10,
+            carbs: 52,
+            fat: 14
+        },
+        tags: ['breakfast', 'pancakes', 'blueberry', 'weekend']
     },
     {
         title: 'Thai Green Curry',
-        description: 'A fragrant and spicy Thai curry with tender chicken, vegetables, and creamy coconut milk. Restaurant-quality curry you can make at home!',
+        description: 'Aromatic and spicy Thai green curry with chicken and vegetables in creamy coconut milk.',
         category: 'dinner',
         cuisine: 'Thai',
         difficulty: 'medium',
@@ -115,33 +137,44 @@ const sampleRecipes = [
         cookTime: 25,
         servings: 4,
         ingredients: [
-            { name: 'chicken breast', amount: '500', unit: 'g' },
-            { name: 'green curry paste', amount: '3', unit: 'tbsp' },
-            { name: 'coconut milk', amount: '400', unit: 'ml' },
-            { name: 'bamboo shoots', amount: '1', unit: 'can' },
-            { name: 'Thai basil', amount: '1', unit: 'cup' },
-            { name: 'bell pepper', amount: '1', unit: 'large' },
-            { name: 'fish sauce', amount: '2', unit: 'tbsp' },
-            { name: 'palm sugar', amount: '1', unit: 'tbsp' },
-            { name: 'kaffir lime leaves', amount: '4', unit: 'pieces' },
-            { name: 'vegetable oil', amount: '2', unit: 'tbsp' }
+            { amount: '500', unit: 'g', name: 'chicken breast, sliced' },
+            { amount: '400', unit: 'ml', name: 'coconut milk' },
+            { amount: '3', unit: 'tbsp', name: 'green curry paste' },
+            { amount: '1', unit: 'cup', name: 'bamboo shoots' },
+            { amount: '1', unit: 'cup', name: 'Thai eggplant, quartered' },
+            { amount: '1', unit: 'cup', name: 'bell peppers, sliced' },
+            { amount: '2', unit: 'tbsp', name: 'fish sauce' },
+            { amount: '1', unit: 'tbsp', name: 'palm sugar' },
+            { amount: '1', unit: 'cup', name: 'Thai basil leaves' },
+            { amount: '2', unit: 'whole', name: 'kaffir lime leaves' }
         ],
         instructions: [
-            { stepNumber: 1, instruction: 'Cut chicken into bite-sized pieces. Slice bell pepper into strips.' },
-            { stepNumber: 2, instruction: 'Heat oil in a wok or large pan over medium-high heat.' },
-            { stepNumber: 3, instruction: 'Add curry paste and fry for 1 minute until fragrant.' },
-            { stepNumber: 4, instruction: 'Add half the coconut milk and stir until it begins to separate.' },
-            { stepNumber: 5, instruction: 'Add chicken and cook for 5 minutes, stirring occasionally.' },
-            { stepNumber: 6, instruction: 'Add remaining coconut milk, bamboo shoots, bell pepper, fish sauce, palm sugar, and lime leaves.' },
-            { stepNumber: 7, instruction: 'Simmer for 10-15 minutes until chicken is cooked through.' },
-            { stepNumber: 8, instruction: 'Stir in Thai basil just before serving. Serve with jasmine rice.' }
+            { stepNumber: 1, instruction: 'Heat 1/2 cup coconut milk in a wok over medium-high heat until oil separates.' },
+            { stepNumber: 2, instruction: 'Add green curry paste and stir-fry for 1-2 minutes until fragrant.' },
+            { stepNumber: 3, instruction: 'Add chicken and cook until no longer pink on the outside.' },
+            { stepNumber: 4, instruction: 'Pour in remaining coconut milk and bring to a simmer.' },
+            { stepNumber: 5, instruction: 'Add eggplant, bamboo shoots, and bell peppers. Cook for 10 minutes.' },
+            { stepNumber: 6, instruction: 'Season with fish sauce and palm sugar. Add kaffir lime leaves.' },
+            { stepNumber: 7, instruction: 'Remove from heat, stir in Thai basil, and serve with jasmine rice.' }
         ],
-        tags: ['thai', 'curry', 'spicy', 'asian'],
-        dietaryInfo: { vegetarian: false, vegan: false, glutenFree: true, dairyFree: true, nutFree: true }
+        dietaryInfo: {
+            vegetarian: false,
+            vegan: false,
+            glutenFree: true,
+            dairyFree: true,
+            nutFree: true
+        },
+        nutritionInfo: {
+            calories: 450,
+            protein: 35,
+            carbs: 18,
+            fat: 28
+        },
+        tags: ['thai', 'curry', 'spicy', 'asian']
     },
     {
         title: 'Classic Chocolate Chip Cookies',
-        description: 'Soft and chewy chocolate chip cookies with crispy edges. The perfect cookie recipe that never fails!',
+        description: 'Crispy on the edges, chewy in the middle - these chocolate chip cookies are absolutely perfect!',
         category: 'dessert',
         cuisine: 'American',
         difficulty: 'easy',
@@ -149,67 +182,86 @@ const sampleRecipes = [
         cookTime: 12,
         servings: 24,
         ingredients: [
-            { name: 'all-purpose flour', amount: '2.25', unit: 'cups' },
-            { name: 'butter, softened', amount: '1', unit: 'cup' },
-            { name: 'granulated sugar', amount: '3/4', unit: 'cup' },
-            { name: 'brown sugar', amount: '3/4', unit: 'cup' },
-            { name: 'eggs', amount: '2', unit: 'large' },
-            { name: 'vanilla extract', amount: '1', unit: 'tsp' },
-            { name: 'baking soda', amount: '1', unit: 'tsp' },
-            { name: 'salt', amount: '1', unit: 'tsp' },
-            { name: 'chocolate chips', amount: '2', unit: 'cups' }
+            { amount: '2 1/4', unit: 'cups', name: 'all-purpose flour' },
+            { amount: '1', unit: 'tsp', name: 'baking soda' },
+            { amount: '1', unit: 'tsp', name: 'salt' },
+            { amount: '1', unit: 'cup', name: 'butter, softened' },
+            { amount: '3/4', unit: 'cup', name: 'granulated sugar' },
+            { amount: '3/4', unit: 'cup', name: 'brown sugar, packed' },
+            { amount: '2', unit: 'large', name: 'eggs' },
+            { amount: '2', unit: 'tsp', name: 'vanilla extract' },
+            { amount: '2', unit: 'cups', name: 'chocolate chips' }
         ],
         instructions: [
             { stepNumber: 1, instruction: 'Preheat oven to 375°F (190°C). Line baking sheets with parchment paper.' },
-            { stepNumber: 2, instruction: 'Cream together butter, granulated sugar, and brown sugar until light and fluffy.' },
-            { stepNumber: 3, instruction: 'Beat in eggs one at a time, then add vanilla extract.' },
-            { stepNumber: 4, instruction: 'In a separate bowl, whisk together flour, baking soda, and salt.' },
-            { stepNumber: 5, instruction: 'Gradually add dry ingredients to wet ingredients, mixing until just combined.' },
+            { stepNumber: 2, instruction: 'Whisk together flour, baking soda, and salt in a bowl.' },
+            { stepNumber: 3, instruction: 'Beat butter and both sugars until light and fluffy, about 3 minutes.' },
+            { stepNumber: 4, instruction: 'Beat in eggs one at a time, then add vanilla.' },
+            { stepNumber: 5, instruction: 'Gradually mix in flour mixture until just combined.' },
             { stepNumber: 6, instruction: 'Fold in chocolate chips.' },
-            { stepNumber: 7, instruction: 'Drop rounded tablespoons of dough onto prepared baking sheets, spacing 2 inches apart.' },
-            { stepNumber: 8, instruction: 'Bake for 10-12 minutes until edges are golden but centers look slightly underdone.' },
-            { stepNumber: 9, instruction: 'Let cool on baking sheet for 5 minutes before transferring to wire rack.' }
+            { stepNumber: 7, instruction: 'Drop rounded tablespoons of dough onto prepared baking sheets.' },
+            { stepNumber: 8, instruction: 'Bake for 10-12 minutes until edges are golden. Cool on pan for 5 minutes.' }
         ],
-        tags: ['cookies', 'chocolate', 'baking', 'classic'],
-        dietaryInfo: { vegetarian: true, vegan: false, glutenFree: false, dairyFree: false, nutFree: true },
-        nutritionInfo: { calories: 180, protein: 2, carbs: 24, fat: 9 }
+        dietaryInfo: {
+            vegetarian: true,
+            vegan: false,
+            glutenFree: false,
+            dairyFree: false,
+            nutFree: true
+        },
+        nutritionInfo: {
+            calories: 180,
+            protein: 2,
+            carbs: 24,
+            fat: 9
+        },
+        tags: ['cookies', 'dessert', 'chocolate', 'baking']
     },
     {
-        title: 'Fresh Garden Salad with Lemon Vinaigrette',
-        description: 'A crisp and refreshing salad with mixed greens, cherry tomatoes, cucumber, and a zesty homemade lemon vinaigrette.',
+        title: 'Fresh Garden Salad',
+        description: 'A light and refreshing salad with mixed greens, cherry tomatoes, cucumbers, and a zesty lemon vinaigrette.',
         category: 'salad',
-        cuisine: 'Mediterranean',
+        cuisine: 'American',
         difficulty: 'easy',
         prepTime: 15,
         cookTime: 0,
         servings: 4,
         ingredients: [
-            { name: 'mixed salad greens', amount: '6', unit: 'cups' },
-            { name: 'cherry tomatoes', amount: '1', unit: 'cup' },
-            { name: 'cucumber', amount: '1', unit: 'medium' },
-            { name: 'red onion', amount: '1/4', unit: 'cup' },
-            { name: 'feta cheese', amount: '1/2', unit: 'cup' },
-            { name: 'olive oil', amount: '1/4', unit: 'cup' },
-            { name: 'lemon juice', amount: '3', unit: 'tbsp' },
-            { name: 'Dijon mustard', amount: '1', unit: 'tsp' },
-            { name: 'honey', amount: '1', unit: 'tsp' },
-            { name: 'salt and pepper', amount: '', unit: 'to taste' }
+            { amount: '6', unit: 'cups', name: 'mixed salad greens' },
+            { amount: '1', unit: 'cup', name: 'cherry tomatoes, halved' },
+            { amount: '1', unit: 'medium', name: 'cucumber, sliced' },
+            { amount: '1/2', unit: 'cup', name: 'red onion, thinly sliced' },
+            { amount: '1/4', unit: 'cup', name: 'olive oil' },
+            { amount: '2', unit: 'tbsp', name: 'lemon juice' },
+            { amount: '1', unit: 'tsp', name: 'Dijon mustard' },
+            { amount: '1', unit: 'clove', name: 'garlic, minced' },
+            { amount: '1', unit: 'pinch', name: 'salt and pepper' }
         ],
         instructions: [
-            { stepNumber: 1, instruction: 'Wash and dry all salad greens thoroughly.' },
-            { stepNumber: 2, instruction: 'Cut cherry tomatoes in half. Slice cucumber into thin rounds. Thinly slice red onion.' },
-            { stepNumber: 3, instruction: 'For the vinaigrette: whisk together olive oil, lemon juice, Dijon mustard, honey, salt, and pepper.' },
-            { stepNumber: 4, instruction: 'Place greens in a large salad bowl. Add tomatoes, cucumber, and red onion.' },
-            { stepNumber: 5, instruction: 'Drizzle with vinaigrette and toss gently to combine.' },
-            { stepNumber: 6, instruction: 'Top with crumbled feta cheese and serve immediately.' }
+            { stepNumber: 1, instruction: 'Wash and dry all vegetables thoroughly.' },
+            { stepNumber: 2, instruction: 'In a large bowl, combine mixed greens, tomatoes, cucumber, and red onion.' },
+            { stepNumber: 3, instruction: 'In a small jar, combine olive oil, lemon juice, Dijon mustard, garlic, salt, and pepper.' },
+            { stepNumber: 4, instruction: 'Shake vigorously until well combined.' },
+            { stepNumber: 5, instruction: 'Drizzle dressing over salad just before serving and toss gently.' }
         ],
-        tags: ['salad', 'healthy', 'quick', 'vegetarian'],
-        dietaryInfo: { vegetarian: true, vegan: false, glutenFree: true, dairyFree: false, nutFree: true },
-        nutritionInfo: { calories: 180, protein: 5, carbs: 10, fat: 14 }
+        dietaryInfo: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            nutFree: true
+        },
+        nutritionInfo: {
+            calories: 120,
+            protein: 2,
+            carbs: 8,
+            fat: 10
+        },
+        tags: ['salad', 'healthy', 'quick', 'vegan']
     },
     {
         title: 'Creamy Tomato Soup',
-        description: 'A comforting bowl of silky smooth tomato soup, perfect for pairing with a grilled cheese sandwich on a cold day.',
+        description: 'A comforting bowl of creamy tomato soup, perfect for dipping grilled cheese sandwiches!',
         category: 'soup',
         cuisine: 'American',
         difficulty: 'easy',
@@ -217,57 +269,72 @@ const sampleRecipes = [
         cookTime: 30,
         servings: 6,
         ingredients: [
-            { name: 'canned whole tomatoes', amount: '2', unit: 'cans (28 oz each)' },
-            { name: 'onion, diced', amount: '1', unit: 'large' },
-            { name: 'garlic cloves', amount: '3', unit: 'cloves' },
-            { name: 'vegetable broth', amount: '2', unit: 'cups' },
-            { name: 'heavy cream', amount: '1/2', unit: 'cup' },
-            { name: 'butter', amount: '2', unit: 'tbsp' },
-            { name: 'sugar', amount: '1', unit: 'tsp' },
-            { name: 'dried basil', amount: '1', unit: 'tsp' },
-            { name: 'salt and pepper', amount: '', unit: 'to taste' }
+            { amount: '2', unit: 'cans (28 oz)', name: 'whole peeled tomatoes' },
+            { amount: '1', unit: 'medium', name: 'onion, diced' },
+            { amount: '3', unit: 'cloves', name: 'garlic, minced' },
+            { amount: '2', unit: 'cups', name: 'vegetable broth' },
+            { amount: '1', unit: 'cup', name: 'heavy cream' },
+            { amount: '2', unit: 'tbsp', name: 'butter' },
+            { amount: '1', unit: 'tsp', name: 'sugar' },
+            { amount: '1', unit: 'tsp', name: 'dried basil' },
+            { amount: '1', unit: 'pinch', name: 'salt and pepper' }
         ],
         instructions: [
-            { stepNumber: 1, instruction: 'Melt butter in a large pot over medium heat. Add diced onion and cook until soft, about 5 minutes.' },
-            { stepNumber: 2, instruction: 'Add minced garlic and cook for 1 minute until fragrant.' },
-            { stepNumber: 3, instruction: 'Add canned tomatoes (with juice), vegetable broth, sugar, and basil. Bring to a boil.' },
+            { stepNumber: 1, instruction: 'Melt butter in a large pot over medium heat. Sauté onion until soft, about 5 minutes.' },
+            { stepNumber: 2, instruction: 'Add garlic and cook for 1 minute until fragrant.' },
+            { stepNumber: 3, instruction: 'Add tomatoes, vegetable broth, sugar, and basil. Bring to a boil.' },
             { stepNumber: 4, instruction: 'Reduce heat and simmer for 20 minutes.' },
-            { stepNumber: 5, instruction: 'Use an immersion blender to puree soup until smooth (or blend in batches in a regular blender).' },
-            { stepNumber: 6, instruction: 'Stir in heavy cream and season with salt and pepper to taste.' },
-            { stepNumber: 7, instruction: 'Serve hot, garnished with fresh basil or croutons.' }
+            { stepNumber: 5, instruction: 'Use an immersion blender to puree until smooth.' },
+            { stepNumber: 6, instruction: 'Stir in heavy cream and season with salt and pepper.' },
+            { stepNumber: 7, instruction: 'Serve hot with a drizzle of cream and fresh basil if desired.' }
         ],
-        tags: ['soup', 'tomato', 'comfort food', 'winter'],
-        dietaryInfo: { vegetarian: true, vegan: false, glutenFree: true, dairyFree: false, nutFree: true },
-        nutritionInfo: { calories: 160, protein: 3, carbs: 15, fat: 10 }
+        dietaryInfo: {
+            vegetarian: true,
+            vegan: false,
+            glutenFree: true,
+            dairyFree: false,
+            nutFree: true
+        },
+        nutritionInfo: {
+            calories: 220,
+            protein: 4,
+            carbs: 18,
+            fat: 16
+        },
+        tags: ['soup', 'tomato', 'comfort food', 'vegetarian']
     }
 ];
 
-const sampleReviews = [
-    { rating: 5, title: 'Amazing recipe!', comment: 'This carbonara is absolutely perfect. The technique of adding the egg mixture off heat is key. My family loved it!' },
-    { rating: 4, title: 'Delicious pancakes', comment: 'These pancakes are so fluffy! I added a bit more blueberries because we love them. Will definitely make again.' },
-    { rating: 5, title: 'Restaurant quality', comment: 'I\'ve been trying to replicate Thai restaurant curry for years. This recipe finally nailed it. The balance of flavors is perfect.' },
-    { rating: 5, title: 'Best cookies ever', comment: 'These are now my go-to chocolate chip cookie recipe. Perfectly chewy in the middle with crispy edges. Pro tip: chill the dough for 30 minutes!' },
-    { rating: 4, title: 'Fresh and simple', comment: 'Love this light salad! The lemon vinaigrette is so refreshing. I added some olives and it was even better.' }
+// Sample Reviews
+const reviewsData = [
+    { recipeIndex: 0, userIndex: 1, rating: 5, title: 'Absolutely Perfect!', comment: 'This carbonara is restaurant quality! The sauce was so creamy and delicious. Will definitely make again.' },
+    { recipeIndex: 0, userIndex: 2, rating: 4, title: 'Great recipe', comment: 'Really tasty! I added some peas for extra veggies. The technique for the sauce is key.' },
+    { recipeIndex: 1, userIndex: 0, rating: 5, title: 'Best pancakes ever!', comment: 'So fluffy and the blueberries burst in every bite. My kids loved these!' },
+    { recipeIndex: 2, userIndex: 1, rating: 4, title: 'Authentic taste', comment: 'Takes me back to my trip to Thailand. Great balance of flavors.' },
+    { recipeIndex: 3, userIndex: 2, rating: 5, title: 'Cookie perfection', comment: 'Crispy edges, chewy middle - exactly as described. These disappeared in minutes!' }
 ];
 
-// Seed function
 async function seedDatabase() {
     try {
         // Connect to MongoDB
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(MONGODB_URI);
         console.log('Connected to MongoDB');
 
         // Clear existing data
         console.log('Clearing existing data...');
-        await User.deleteMany({});
-        await Recipe.deleteMany({});
         await Review.deleteMany({});
+        await Recipe.deleteMany({});
+        await User.deleteMany({});
 
         // Create users
         console.log('Creating users...');
         const createdUsers = [];
-        for (const userData of sampleUsers) {
-            const user = new User(userData);
+        for (const userData of users) {
+            const hashedPassword = await bcrypt.hash(userData.password, 10);
+            const user = new User({
+                ...userData,
+                password: hashedPassword
+            });
             await user.save();
             createdUsers.push(user);
             console.log(`  Created user: ${user.username}`);
@@ -276,12 +343,14 @@ async function seedDatabase() {
         // Create recipes
         console.log('Creating recipes...');
         const createdRecipes = [];
-        for (let i = 0; i < sampleRecipes.length; i++) {
-            const recipeData = {
-                ...sampleRecipes[i],
-                author: createdUsers[i % createdUsers.length]._id
-            };
-            const recipe = new Recipe(recipeData);
+        for (let i = 0; i < recipes.length; i++) {
+            const recipeData = recipes[i];
+            // Assign recipes to different users
+            const authorIndex = i % createdUsers.length;
+            const recipe = new Recipe({
+                ...recipeData,
+                author: createdUsers[authorIndex]._id
+            });
             await recipe.save();
             createdRecipes.push(recipe);
             console.log(`  Created recipe: ${recipe.title}`);
@@ -289,28 +358,38 @@ async function seedDatabase() {
 
         // Create reviews
         console.log('Creating reviews...');
-        for (let i = 0; i < sampleReviews.length; i++) {
-            const reviewData = {
-                ...sampleReviews[i],
-                recipe: createdRecipes[i]._id,
-                user: createdUsers[(i + 1) % createdUsers.length]._id // Different user than author
-            };
-            const review = new Review(reviewData);
+        for (const reviewData of reviewsData) {
+            const review = new Review({
+                recipe: createdRecipes[reviewData.recipeIndex]._id,
+                user: createdUsers[reviewData.userIndex]._id,
+                rating: reviewData.rating,
+                title: reviewData.title,
+                comment: reviewData.comment
+            });
             await review.save();
-            console.log(`  Created review for: ${createdRecipes[i].title}`);
+
+            // Update recipe rating
+            const recipe = createdRecipes[reviewData.recipeIndex];
+            const reviews = await Review.find({ recipe: recipe._id });
+            const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+            recipe.averageRating = totalRating / reviews.length;
+            recipe.totalRatings = reviews.length;
+            await recipe.save();
+
+            console.log(`  Created review for: ${recipe.title}`);
         }
 
         // Add some favorites
         console.log('Adding favorites...');
-        createdUsers[0].favorites = [createdRecipes[1]._id, createdRecipes[3]._id];
+        createdUsers[0].favorites.push(createdRecipes[3]._id, createdRecipes[4]._id);
         await createdUsers[0].save();
-        createdUsers[1].favorites = [createdRecipes[0]._id, createdRecipes[2]._id];
+        createdUsers[1].favorites.push(createdRecipes[0]._id, createdRecipes[2]._id);
         await createdUsers[1].save();
 
         console.log('\n✅ Database seeded successfully!');
         console.log('\nTest accounts:');
         console.log('  Email: maria@example.com | Password: password123');
-        console.log('  Email: john@example.com | Password: password123');
+        console.log('  Email: john@example.com  | Password: password123');
         console.log('  Email: sarah@example.com | Password: password123');
 
     } catch (error) {
@@ -321,5 +400,4 @@ async function seedDatabase() {
     }
 }
 
-// Run seed
 seedDatabase();
