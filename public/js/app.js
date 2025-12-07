@@ -276,7 +276,7 @@ function createRecipeCard(recipe) {
     card.className = 'card recipe-card';
     card.innerHTML = `
         <a href="recipe.html?id=${recipe._id}" class="card-image">
-            <img src="${recipe.image || '/images/default-recipe.jpg'}" alt="${recipe.title}">
+            <img src="https://via.placeholder.com/400x300?text=${encodeURIComponent(recipe.title)}" alt="${recipe.title}">
             <span class="recipe-category">${recipe.category}</span>
         </a>
         <div class="card-body">
