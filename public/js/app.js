@@ -324,9 +324,6 @@ function createRecipeCard(recipe) {
     `;
     return card;
 }
-// ======================
-// Page-Specific Functions
-// ======================
 
 // Home Page
 async function initHomePage() {
@@ -493,9 +490,7 @@ function changePage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ======================
-// Event Listeners
-// ======================
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Check auth state
