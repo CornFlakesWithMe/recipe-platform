@@ -272,40 +272,58 @@ function updateNavForAuth(isLoggedIn) {
 // ======================
 
 function createRecipeCard(recipe) {
+    // Safety check - if recipe is invalid, return empty div
+    if (!recipe || !recipe._id) {
+        console.warn('Invalid recipe data:', recipe);
+        return document.createElement('div');
+    }
+    
     const card = document.createElement('div');
     card.className = 'card recipe-card';
+    
+    // Safe defaults for all fields
+    const title = recipe.title || 'Untitled Recipe';
+    const description = recipe.description || 'No description available';
+    const category = recipe.category || 'Other';
+    const difficulty = recipe.difficulty || 'easy';
+    const prepTime = recipe.prepTime || 0;
+    const cookTime = recipe.cookTime || 0;
+    const averageRating = recipe.averageRating || 0;
+    const totalRatings = recipe.totalRatings || 0;
+    const authorName = recipe.author?.username || 'Unknown';
+    const image = recipe.image || '';
+    
     card.innerHTML = `
         <a href="recipe.html?id=${recipe._id}" class="card-image">
-            <img src="${recipe.image || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%23e2e8f0%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 dominant-baseline=%27middle%27 text-anchor=%27middle%27 fill=%27%23718096%27 font-family=%27Arial%27 font-size=%2720%27%3ENo Image%3C/text%3E%3C/svg%3E'}" alt="${recipe.title}" onerror="this.onerror=null; this.style.background='#e2e8f0'">
-            <span class="recipe-category">${recipe.category}</span>
+            <img src="${image}" alt="${title}" style="background:#e2e8f0;" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%23e2e8f0%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 dominant-baseline=%27middle%27 text-anchor=%27middle%27 fill=%27%23718096%27 font-family=%27Arial%27 font-size=%2718%27%3ENo Image%3C/text%3E%3C/svg%3E';">
+            <span class="recipe-category">${category}</span>
         </a>
         <div class="card-body">
             <a href="recipe.html?id=${recipe._id}">
-                <h3 class="card-title">${recipe.title}</h3>
+                <h3 class="card-title">${title}</h3>
             </a>
-            <p class="card-text">${recipe.description.substring(0, 100)}${recipe.description.length > 100 ? '...' : ''}</p>
+            <p class="card-text">${description.substring(0, 100)}${description.length > 100 ? '...' : ''}</p>
             <div class="card-meta">
                 <span class="recipe-time">
                     <span>⏱️</span>
-                    <span>${formatTime(recipe.prepTime + recipe.cookTime)}</span>
+                    <span>${formatTime(prepTime + cookTime)}</span>
                 </span>
                 <span class="recipe-rating">
                     <span>★</span>
-                    <span>${recipe.averageRating.toFixed(1)}</span>
-                    <span>(${recipe.totalRatings})</span>
+                    <span>${averageRating.toFixed(1)}</span>
+                    <span>(${totalRatings})</span>
                 </span>
             </div>
         </div>
         <div class="card-footer">
             <div class="d-flex align-center justify-between">
-                <span class="difficulty-badge ${recipe.difficulty}">${recipe.difficulty}</span>
-                <span class="text-sm text-gray">${recipe.author?.username || 'Unknown'}</span>
+                <span class="difficulty-badge ${difficulty}">${difficulty}</span>
+                <span class="text-sm text-gray">${authorName}</span>
             </div>
         </div>
     `;
     return card;
 }
-
 // ======================
 // Page-Specific Functions
 // ======================
