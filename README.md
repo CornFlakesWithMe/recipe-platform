@@ -1,224 +1,197 @@
-# FlavorShare - Recipe Sharing Platform
 
-A full-stack web application for sharing and discovering recipes. Built for CIS 435 at the University of Michigan-Dearborn.
 
-## 🍳 Features
+### Online Deployment
+https://recipe-platform-qior.onrender.com
 
-- **User Authentication**: Secure registration, login, and session management
-- **Recipe Management**: Full CRUD operations for recipes
-- **Recipe Search & Filter**: Search by keyword, filter by category, difficulty, and dietary preferences
-- **Reviews & Ratings**: Users can review and rate recipes
-- **Favorites**: Save favorite recipes for quick access
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
-- **Image Upload**: Upload photos for recipes
+Note: This way is probably the best way to view the project unless you want to start via zip file.
 
-## 🛠️ Tech Stack
 
-### Frontend
-- HTML5
-- CSS3 (Custom styling with CSS variables)
-- Vanilla JavaScript (ES6+)
-
-### Backend
-- Node.js
-- Express.js
-- MongoDB with Mongoose ODM
-
-### Security
-- bcrypt.js for password hashing
-- express-session for session management
-- express-validator for input validation
-- Mongoose schema validation
-
-## 📁 Project Structure
-
-```
-recipe-platform/
-├── config/
-│   └── database.js          # MongoDB connection configuration
-├── middleware/
-│   ├── auth.js              # Authentication middleware
-│   └── validation.js        # Input validation middleware
-├── models/
-│   ├── User.js              # User schema
-│   ├── Recipe.js            # Recipe schema
-│   └── Review.js            # Review schema
-├── public/
-│   ├── css/
-│   │   └── styles.css       # Main stylesheet
-│   ├── js/
-│   │   └── app.js           # Frontend JavaScript
-│   ├── images/              # Static images
-│   ├── index.html           # Home page
-│   ├── recipes.html         # Browse recipes page
-│   ├── recipe.html          # Recipe detail page
-│   ├── create-recipe.html   # Create recipe page
-│   ├── login.html           # Login page
-│   ├── register.html        # Registration page
-│   └── profile.html         # User profile page
-├── routes/
-│   ├── auth.js              # Authentication routes
-│   ├── recipes.js           # Recipe CRUD routes
-│   └── reviews.js           # Review routes
-├── .env.example             # Environment variables template
-├── package.json             # Node.js dependencies
-├── server.js                # Main application entry point
-└── README.md                # This file
-```
-
-## 🚀 Getting Started
+## 💻 Local Deployment
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- MongoDB (local installation or MongoDB Atlas account)
-- npm or yarn
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [MongoDB](https://www.mongodb.com/try/download/community) (local installation) OR [MongoDB Atlas](https://www.mongodb.com/atlas) account
 
-### Installation
+### Step 1: Extract the Project Files
 
-1. **Clone or extract the project**
-   ```bash
-   cd recipe-platform
-   ```
+Extract the `recipe-platform.zip` file to your desired location.
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Edit `.env` and set your MongoDB connection string:
-   ```
-   PORT=3000
-   NODE_ENV=development
-   MONGODB_URI=mongodb://localhost:27017/recipe_platform
-   SESSION_SECRET=your-secret-key-here
-   ```
-
-4. **Start MongoDB** (if using local installation)
-   ```bash
-   mongod
-   ```
-
-5. **Run the application**
-   ```bash
-   # Development mode with auto-reload
-   npm run dev
-   
-   # Production mode
-   npm start
-   ```
-
-6. **Access the application**
-   Open your browser and navigate to `http://localhost:3000`
-
-## 📦 Deployment
-
-### Deploying to Render.com (Recommended)
-
-1. Create a [Render](https://render.com) account
-2. Create a new Web Service
-3. Connect your GitHub repository
-4. Configure:
-   - **Environment**: Node
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-5. Add environment variables in the Render dashboard
-6. Deploy!
-
-### Deploying to Railway.app
-
-1. Create a [Railway](https://railway.app) account
-2. Create a new project
-3. Add a MongoDB plugin (or use MongoDB Atlas)
-4. Deploy from GitHub
-5. Set environment variables
-6. Your app will be live!
-
-### MongoDB Atlas Setup
-
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new cluster
-3. Create a database user
-4. Whitelist your IP address (or allow all IPs for cloud deployment)
-5. Get your connection string and add it to your environment variables
-
-## 🔐 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-- `GET /api/auth/check` - Check authentication status
-- `GET /api/auth/me` - Get current user profile
-- `PUT /api/auth/profile` - Update profile
-- `PUT /api/auth/password` - Change password
-
-### Recipes
-- `GET /api/recipes` - Get all recipes (with pagination & filters)
-- `GET /api/recipes/featured` - Get featured recipes
-- `GET /api/recipes/recent` - Get recent recipes
-- `GET /api/recipes/:id` - Get single recipe
-- `POST /api/recipes` - Create recipe (auth required)
-- `PUT /api/recipes/:id` - Update recipe (owner only)
-- `DELETE /api/recipes/:id` - Delete recipe (owner only)
-- `POST /api/recipes/:id/favorite` - Toggle favorite
-
-### Reviews
-- `GET /api/reviews/recipe/:recipeId` - Get reviews for recipe
-- `POST /api/reviews/recipe/:recipeId` - Add review
-- `PUT /api/reviews/:id` - Update review
-- `DELETE /api/reviews/:id` - Delete review
-
-## 🔒 Security Features
-
-- **Password Hashing**: All passwords are hashed using bcrypt
-- **Input Validation**: All user input is validated and sanitized
-- **Schema Validation**: Mongoose schemas enforce data integrity
-- **Session Management**: Secure session handling with MongoDB store
-- **XSS Prevention**: User input is escaped before display
-- **CSRF Protection**: Forms use session-based authentication
-
-## 📱 Responsive Design
-
-The application is fully responsive and works on:
-- Desktop (1200px+)
-- Tablet (768px - 1199px)
-- Mobile (< 768px)
-
-## 🎨 Customization
-
-### Changing Colors
-Edit the CSS variables in `/public/css/styles.css`:
-```css
-:root {
-    --primary-color: #e63946;
-    --secondary-color: #457b9d;
-    /* ... more variables */
-}
+```bash
+cd recipe-platform
 ```
 
-### Adding New Categories
-Edit the category enum in `/models/Recipe.js` and update the select options in the HTML forms.
+### Step 2: Install Dependencies
 
-## 👥 Team Members
+```bash
+npm install
+```
 
-- [Your Name] - [Role]
-- [Team Member 2] - [Role]
-- [Team Member 3] - [Role]
-- [Team Member 4] - [Role]
+### Step 3: Configure Environment Variables
 
-## 📄 License
+Create a `.env` file in the root directory:
 
-This project was created for educational purposes as part of CIS 435 at the University of Michigan-Dearborn.
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
 
-## 🙏 Acknowledgments
+# MongoDB Connection
+# Option A: Local MongoDB
+MONGODB_URI=mongodb://localhost:27017/recipe_platform
 
-- University of Michigan-Dearborn
-- CIS 435 Course Instructor
-- MongoDB Documentation
-- Express.js Documentation
+# Option B: MongoDB Atlas (cloud)
+# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/recipe_platform
+
+# Session Secret (generate a random string)
+SESSION_SECRET=your-super-secret-key-change-this-in-production
+
+# Cloudinary Configuration (for image uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+### Step 4: Start MongoDB (if using local)
+
+**Windows:**
+```bash
+mongod
+```
+
+**macOS/Linux:**
+```bash
+sudo systemctl start mongod
+# or
+brew services start mongodb-community
+```
+
+### Step 5: Seed the Database (Optional)
+
+```bash
+node seed.js
+```
+
+This creates sample users, recipes, and reviews.
+
+### Step 6: Start the Application
+
+```bash
+# Development mode (with auto-restart)
+npm run dev
+
+# Production mode
+npm start
+```
+
+### Step 7: Access the Application
+
+Open your browser and navigate to:
+```
+http://localhost:3000
+```
+
+---
+
+## ☁️ Cloud Deployment
+
+### Deploy to Render.com
+
+#### Step 1: Set Up MongoDB Atlas (Cloud Database)
+
+1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Create a free account and cluster
+3. Click **"Connect"** → **"Connect your application"**
+4. Copy the connection string:
+   ```
+   mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/recipe_platform
+   ```
+5. Replace `<username>` and `<password>` with your database credentials
+6. Go to **Network Access** → **Add IP Address** → **Allow Access from Anywhere** (0.0.0.0/0)
+
+#### Step 2: Set Up Cloudinary (Image Storage)
+
+1. Go to [Cloudinary](https://cloudinary.com/)
+2. Create a free account
+3. From the Dashboard, copy:
+   - Cloud Name
+   - API Key
+   - API Secret
+
+#### Step 3: Create a Render Account
+
+1. Go to [Render.com](https://render.com/)
+2. Sign up for a free account
+
+#### Step 4: Deploy the Application
+
+1. In Render, click **"New +"** → **"Web Service"**
+2. Select **"Build and deploy from a Git repository"**
+3. Connect your GitHub/GitLab account OR use **"Public Git repository"**
+4. Configure as shown in Step 5
+
+#### Step 5: Configure the Web Service
+
+| Setting | Value |
+|---------|-------|
+| **Name** | recipe-platform (or your choice) |
+| **Region** | Oregon (US West) or nearest to you |
+| **Runtime** | Node |
+| **Build Command** | `npm install` |
+| **Start Command** | `npm start` |
+| **Plan** | Free |
+
+#### Step 6: Add Environment Variables
+
+In the Render dashboard, go to **Environment** and add:
+
+| Key | Value |
+|-----|-------|
+| `NODE_ENV` | `production` |
+| `PORT` | `3000` |
+| `MONGODB_URI` | Your MongoDB Atlas connection string |
+| `SESSION_SECRET` | A long random string (e.g., `flavorshare-secret-key-2024`) |
+| `CLOUDINARY_CLOUD_NAME` | Your Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Your Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Your Cloudinary API secret |
+
+#### Step 7: Deploy
+
+1. Click **"Create Web Service"**
+2. Wait for deployment (5-10 minutes)
+3. Access your app at `https://your-app-name.onrender.com`
+
+---
+
+## 🔐 Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `PORT` | No | Server port (default: 3000) |
+| `NODE_ENV` | Yes | `development` or `production` |
+| `MONGODB_URI` | Yes | MongoDB connection string |
+| `SESSION_SECRET` | Yes | Secret key for session encryption |
+| `CLOUDINARY_CLOUD_NAME` | Yes | Cloudinary account cloud name |
+| `CLOUDINARY_API_KEY` | Yes | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Yes | Cloudinary API secret |
+
+---
+
+## 🗄 Database Setup
+
+### Seeding Sample Data
+
+Run the seed script to populate the database with sample data:
+
+```bash
+# Local database
+node seed.js
+
+# Production database (use with caution - clears existing data)
+MONGODB_URI="your-production-uri" node seed.js
+```
+
+**Windows PowerShell:**
+```powershell
+$env:MONGODB_URI="your-production-uri"; node seed.js
+```
